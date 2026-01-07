@@ -1,4 +1,4 @@
-pipeline {
+/*pipeline {
     agent { label 'Jenkins-Agent' }
     tools {
         jdk 'Java21'
@@ -22,7 +22,7 @@ pipeline {
 
         stage("Checkout from SCM"){
                 steps {
-                    git branch: 'main', credentialsId: 'github', url: 'https://github.com/Ashfaque-9x/register-app'
+                    git branch: 'main', credentialsId: 'github', url: 'https://github.com/Bhavya2520/SPM'
                 }
         }
 
@@ -104,12 +104,64 @@ pipeline {
        failure {
              emailext body: '''${SCRIPT, template="groovy-html.template"}''', 
                       subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Failed", 
-                      mimeType: 'text/html',to: "ashfaque.s510@gmail.com"
+                      mimeType: 'text/html',to: "bhavyat2520@gmail.com"
       }
       success {
             emailext body: '''${SCRIPT, template="groovy-html.template"}''', 
                      subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Successful", 
-                     mimeType: 'text/html',to: "ashfaque.s510@gmail.com"
+                     mimeType: 'text/html',to: "bhavyat2520@gmail.com"
       }      
    }
+}
+*/
+
+pipeline {
+    agent { label 'Jenkins-Agent' }
+
+    tools {
+        jdk 'Java21'
+        maven 'Maven3'
+    }
+
+    environment {
+        APP_NAME = "register-app-pipeline"
+        BUILD_VERSION = "1.0.${BUILD_NUMBER}"
+    }
+
+    stages {
+
+        stage('Verify Environment') {
+            steps {
+                echo "Verifying build environment"
+                sh 'java -version'
+                sh 'mvn -version'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo "Building application"
+                sh 'mvn clean package -DskipTests'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo "Running tests"
+                sh 'mvn test'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "BUILD SUCCESSFUL 🎉"
+        }
+        failure {
+            echo "BUILD FAILED ❌"
+        }
+        always {
+            echo "Pipeline execution completed"
+        }
+    }
 }
